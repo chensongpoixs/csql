@@ -126,3 +126,126 @@ The RPUSHX command only pushes the element if the key already exists.
 
 ---------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------
+-- 二, redis 和 mysql 中 `PRIMARY KEY` 关键字差不多  
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+
+SADD key member [member ...]
+--起始版本：1.0.0
+--时间复杂度：O(N) where N is the number of members to be added.
+--添加一个或多个指定的member元素到集合的 key中.指定的一个或者多个元素member 如果已经在集合key中存在则忽略.如果集合key 不存在，则新建集合key,并添加member元素到集合key中.
+--如果key 的类型不是集合则返回错误.
+--返回值
+integer-reply:返回新成功添加到集合里元素的数量，不包括已经存在于集合中的元素.
+
+--##历史
+
+--= 2.4: 接受多个member 参数. Redis 2.4 以前的版本每次只能添加一个member元素.
+
+--例子
+redis> SADD myset "Hello"
+(integer) 1
+redis> SADD myset "World"
+(integer) 1
+redis> SADD myset "World"
+(integer) 0
+redis> SMEMBERS myset
+1) "World"
+2) "Hello"
+redis>SREM myset "World" -- delete
+"1"
+redis>SMEMBERS myset     -- search
+ 1)  "Hello"
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+-- 三, redis  HMSET
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+
+HMSET key field value [field value ...]
+--起始版本：2.0.0
+--时间复杂度：O(N) where N is the number of fields being set.
+--设置 key 指定的哈希集中指定字段的值。该命令将重写所有在哈希集中存在的字段。如果 key 指定的哈希集不存在，会创建一个新的哈希集并与 key 关联
+--返回值
+--simple-string-reply
+--例子
+redis> HMSET myhash field1 "Hello" field2 "World"
+OK
+redis> HGET myhash field1
+"Hello"
+redis> HGET myhash field2
+"World"
+redis> 
+
+
+
+-- 复杂一点的使用
+
+
+redis> hmset chensong:34:34 chernsong 343 chrenli chenrli chernsong 7777
+
+
+
+"OK"
+redis>HMSET myhash field3 "Hello" field4 "World"
+"OK"
+redis>HMSET myhash field3 "Hddello" field4 "Worlddd"
+"OK"
+redis>hmset chensong:34:34 chensong 343 chenli chenli chensong 7777
+"ERR wrong number of arguments for 'hmset' command"
+redis>hmset chensong:34:34 chernsong 343 chrenli chenrli chernsong 7777
+"OK"
+redis>HGET chensong:34:34
+"ERR wrong number of arguments for 'hget' command"
+redis>HGET chensong:34:34 chernsong:chrenli
+null
+redis>HGET chensong:34:34 chipcount
+null
+redis>HGET chensong:34:34 chrenli  -- key 值
+"chenrli"
+redis>HGET chensong:34:34 chernsong
+"777"
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+-- 四, redis  LRANGEA
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+
+LRANGE key start stop
+--起始版本：1.0.0
+--时间复杂度：O(S+N) where S is the distance of start offset from HEAD for small lists, from nearest end (HEAD or TAIL) for large lists; and N is the number of elements in the specified range.
+--返回存储在 key 的列表里指定范围内的元素。 start 和 end 偏移量都是基于0的下标，即list的第一个元素下标是0（list的表头），第二个元素下标是1，以此类推。
+--偏移量也可以是负数，表示偏移量是从list尾部开始计数。 例如， -1 表示列表的最后一个元素，-2 是倒数第二个，以此类推。
+--在不同编程语言里，关于求范围函数的一致性
+--需要注意的是，如果你有一个list，里面的元素是从0到100，那么 LRANGE list 0 10 这个命令会返回11个元素，即最右边的那个元素也会被包含在内。 在你所使用的编程语言里，这一点可能是也可能不是跟那些求范围有关的函数都是一致的。（像Ruby的 Range.new，Array#slice 或者Python的 range() 函数。）
+--超过范围的下标
+--当下标超过list范围的时候不会产生error。 如果start比list的尾部下标大的时候，会返回一个空列表。 如果stop比list的实际尾部大的时候，Redis会当它是最后一个元素的下标。
+--返回值
+array-reply: 指定范围里的列表元素。
+
+--例子
+redis> RPUSH mylist "one"
+(integer) 1
+redis> RPUSH mylist "two"
+(integer) 2
+redis> RPUSH mylist "three"
+(integer) 3
+redis> LRANGE mylist 0 0
+1) "one"
+redis> LRANGE mylist -3 2
+1) "one"
+2) "two"
+3) "three"
+redis> LRANGE mylist -100 100
+1) "one"
+2) "two"
+3) "three"
+redis> LRANGE mylist 5 10
+(empty list or set)
+redis> 
+
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
