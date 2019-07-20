@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 基准测试脚本
+# 1.基准测试脚本
 
 INTERVAL=5
 PREFIX=$INTERVAL-sec-status
@@ -22,3 +22,36 @@ while test -e $RUNFILE; do
 done
 
 echo Exiting because $RUNFILE does not exist.
+
+
+
+
+# 2. 收集服务器信息
+
+$mysqladmin ext -i1 | awk '
+	/Queries/{q=$4-qp;qp=$4}
+	/Threads_connected/{tc=$4}
+	/Threads_running/{printf "%5d %5d %5d\n", q, tc, $4}'
+	
+# 效果图
+#  请求数 连接数 运行线程数
+#  395     5     	 1
+#    1     5     	 1
+#    1     5     	 1
+#    1     5     	 1
+#    1     5     	 1
+#    1     5     	 1
+#    1     5     	 1
+#    1     5     	 1
+
+# 问题分析
+
+
+mysql -e 'SHOW PROCESSLIST\G' |grep State: | sort | uniq -c | sort -rn
+
+
+
+
+
+	
+	
