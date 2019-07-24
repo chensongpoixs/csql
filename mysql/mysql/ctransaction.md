@@ -44,3 +44,20 @@ md5和sha1都是强加密的， 加密的速度会比较慢， 使用crc64哈希
 
 ##### ③ 索引开源将随机I/O变为顺序I/O。
 
+
+
+### 二, Mysql查询优化
+
+#### 1, Mysql查询流程
+
+![](https://github.com/chensongpoixs/chensongpoixs.github.io/blob/master/img/2019-07-21/mysql_search.png?raw=true)
+
+
+1. 客户端发送一条查询给服务器。
+2. 服务器先检查查询缓存，如果命中了缓存，则立即返回存储中的结果。否则进入下一阶段。
+3. 服务器端进入SQL解析，预处理，再由优化器生成对应的执行计划。
+4. Mysql根据优化器生成的执行计划，调用存储引擎的API来执行查询。
+5. 将结果返回给客户端。
+
+
+
