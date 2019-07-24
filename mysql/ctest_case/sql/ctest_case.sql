@@ -62,3 +62,25 @@ select max(t_webservicecalls.account) from t_webservicecalls;
 -- 1. INET_ATON() 
 -- 2. INET_NTOA() 
 -- 两个函数转换
+
+
+
+-- 不是全表的查询 primary key  type = ref 
+explain select *from t_primary_key where last_name = 'chenli';
+
+
+select *from t_primary_key;
+
+--- 全表查询 type = all
+explain select *from t_primary_key where dob = '2019-07-21';
+
+
+
+-- 删除主键 操作命令
+alter table chensong.t_primary_key drop foreign key last_name;
+alter table chensong.t_primary_key drop key last_name;
+
+
+
+
+
