@@ -61,3 +61,57 @@ md5和sha1都是强加密的， 加密的速度会比较慢， 使用crc64哈希
 
 
 
+#### 2, mysql 不支持同时查询同时修改 但是可以使用临时表
+
+```
+update tb1 as outer_tb1
+	set cnt = ( 
+		select count(*) from tb1 as inner_tb1
+		where inner_tb1.type = outer_tb1.type
+	);
+// error 1093
+```
+
+ok
+
+```
+update tb1 
+	inner join(
+		select type, count(*) as cnt
+		from tb1
+		grop by type
+	) as der using(type)
+set tb1.cnt = der.cnt;
+
+```
+
+
+#### 3, MySql的存储引擎介绍
+
+##### ① InnoDB存储引擎
+
+InnoDB存储引擎支持事务，主要面向在线事务处理(OLTP)方面的应用。其特点是行锁设计，支持外健，并支持类类于Oracle的非锁定读，即默认情况下读取存储不会产生锁。MySQL在Windows版本小的InnoDB是默认的存储引擎，同时InnoDB默认地包含在所有的MySQL二进制发布版本。
+
+InnoDB存储引擎将数据放到一个逻辑的表空间中，这个表空间就像黑盒一样由InnoDB自身进行管理。从MySQL4.1版本开始，它可以将每个InnoDB存储引擎的表单独存放到一个独立的ibd文件中。与Oracle类似，InnoDB存储引擎同样可以使用设备(row disk)来建立其表空间。
+
+InnoDb通过使用多版本并发控制(MVCC)来获取高并发性，并且实现了SQL标准的4中隔离级别，默认为REPEATABLE级别。同时使用一种被称为next-key locking的策略了避免幻读(phantom)现象的产生。除此之外，InnoDB存储引擎还提供了插入缓存(insert buffer),二次写(double write),自适应哈希索引(adaptive hash index)，预读取(read ahead)等高性能和高可用的功能。
+
+对于表中数据的存储，InnoDB存储引擎采用了聚集(clustered)的方式，这种方法类似于Oracle的索引聚集表(index organized table, IOT)。 每张表的存储都按主键的顺序存放，如果没有显式地在表定义时指定主键，InnoDB存储引擎为每一行生成一个6字节的ROWID，并以此作为主键。
+
+##### ② MyISAM存储引擎
+
+MyISAM存储引擎s MySQL官方提供的存储引擎。其特点是不支持事务，表锁和全文索引，对于一些OLAP(Online Analytical Processing, 在线分析处理)操作速度快。除Windows版本外，是所有MySQL版本默认的存储引擎。
+
+MySQL存储引擎表由MYD和MYI组成，MYD原理存放数据文件，MYI用来存放索引文件，可以通过myisampack工具来进一步压缩数据文件，因为myisampack工具使用哈夫曼(Huffan)编码静态算法来压缩数据，因此使用myisampack工具压缩后的表是只读的，当然你也可以通过myisampack来解压数据文件。
+
+在MySQL5.0版本之前，MyISAM默认支持的表大小为4G，如果需要支持大于4G的MyISAM表时，则需要制定MAX_ROWS和AVG_ROW_LENGTH的属性。从MyISAM5.0版本开始，MYIASM默认支持256T的单表数据，这足够一般应用的需求。
+
+##### ③ NDB存储索引
+
+2003年，MySQL AB公司从
+
+
+
+
+
+

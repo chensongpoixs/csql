@@ -82,5 +82,36 @@ alter table chensong.t_primary_key drop key last_name;
 
 
 
+select count(*) from `t_test_case_python`;
+
+show engines;
+
+-- create myisam database
+
+use chensong;
+
+create table t_engines engine = myisam as select *from t_engines;
+
+alter table t_engines engine=innodb;
+
+alter table t_engines engine=archive;
+
+-- 比较三种存储引擎的文件的大小
+
+
+-- 用户名权限表
+
+use mysql;
+select *from user;
+select host, user, password from user;
+
+
+-- unix 上通信
+
+show variables like 'socket';
+
+
+
+
 
 
