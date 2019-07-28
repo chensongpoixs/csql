@@ -115,3 +115,49 @@ show variables like 'socket';
 
 
 
+-- 查询InnoDB存储引擎的版本
+show variables like 'innodb_version';
+
+-- InnoDB io threads 数
+show variables like 'innodb_%io_threads';
+
+-- show variables like 'myisam_%io_threads';
+
+show engine innodb status;
+
+-- 回收 事务 undo页的数据
+show variables like 'innodb_purge_threads';
+
+show variables like 'innodb_buffer_pool_size';
+
+
+show variables like 'innodb_buffer_pool_instances';
+use information_schema;
+-- 缓存池使用情况
+select POOL_ID, POOL_SIZE, FREE_BUFFERS, DATABASE_PAGES from  INNODB_BUFFER_POOL_STATS;
+
+select *from INNODB_BUFFER_POOL_STATS;
+
+
+show variables like 'innodb_old_blocks_pct';
+
+
+
+-- LRU 
+select table_name, space, page_number, page_type from INNODB_BUFFER_PAGE_LRU where SPACE = 1;
+
+
+
+-- 查看是否脏数据
+select table_name, space, page_number, page_type from INNODB_BUFFER_PAGE_LRU where OLDEST_MODIFICATION > 1;
+
+
+-- InnoDB的缓存大小
+show variables like 'innodb_change_buffer_max_size';
+
+
+
+
+
+
+
