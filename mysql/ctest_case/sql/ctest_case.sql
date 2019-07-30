@@ -158,6 +158,97 @@ show variables like 'innodb_change_buffer_max_size';
 
 
 
+-- 1. 当前会话 读取缓存
+select @@session.read_buffer_size;
+-- 2. 全局会话的 读取缓存
+select @@global.read_buffer_size;
+-- 3. 错误日志
+show variables like 'log_error';
+
+-- use mysql;
+-- use information_schema;
+-- system hostname;
+
+show variables like 'long_query_time';
+
+
+
+show variables like 'innodb_file_per_table';
+
+
+
+use chensong;
+
+create table `t_primar_key`(
+	`a`	INT NOT NULL,
+	`b` INT NOT NULL,
+	`c` INT NOT NULL,
+	`d`	INT NOT NULL,
+	unique key (b),
+	unique key (d), unique key (c)
+);
+
+
+explain select *from `t_primar_key`;
+
+INSERT INTO `t_primar_key` values( 1, 2, 3, 4);
+INSERT INTO `t_primar_key` values( 1, 3, 4, 5);
+
+
+select a, b, c, d, _rowid from `t_primar_key`;
+
+-- a  b c d _rowid
+-- 1	2	3	4	2
+-- 1	3	4	5	3
+
+
+show variables like 'log_slow_queries';
+
+
+show variables like 'log_queries_not_using_indexes';
+
+show create table mysql.slow_log;
+
+
+-- 查询慢查询sql
+show variables like 'log_output';
+set global log_output='table';
+show variables like 'log_output';
+select sleep(11);
+select *from mysql.slow_log;
+
+
+use chensong;
+show tables;
+
+
+select *from `t_test_case_python`;
+
+-- 二进制日志
+
+show master status;
+
+
+show variables like 'datadir';
+
+
+
+-- binlog 缓存信息
+show variables like 'binlog_cache_size';
+
+show global status like 'binlog_cache%';
+
+
+-- 进程id
+show variables like 'pid_file';
+
+
+
+
+
+
+
+
 
 
 
